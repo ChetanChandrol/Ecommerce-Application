@@ -1,0 +1,20 @@
+package com.dev.ECommerceProductService.service;
+
+
+import com.dev.ECommerceProductService.dto.ProductRequestDTO;
+import com.dev.ECommerceProductService.dto.ProductResponseDTO;
+import com.dev.ECommerceProductService.exception.ProductServiceException;
+
+import java.util.List;
+
+public interface ProductService {
+    List<ProductResponseDTO> getAllProducts();
+
+    ProductResponseDTO getProductsById(String productId) throws ProductNotFoundException;
+
+    ProductResponseDTO createProduct(ProductRequestDTO productRequestDTO);
+
+    Boolean deleteProduct(String productId);
+
+    ProductResponseDTO updateProduct(String productId, ProductRequestDTO productRequestDTO) throws ProductServiceException;
+}
