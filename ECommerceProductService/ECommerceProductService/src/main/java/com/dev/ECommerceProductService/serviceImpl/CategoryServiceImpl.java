@@ -61,11 +61,10 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public boolean deleteCategory(UUID categoryId) {
+    public void deleteCategory(UUID categoryId) {
         if (!categoryRepository.existsById(categoryId)) {
             throw new ProductServiceException("Category Not Found With the desired ID" + categoryId, HttpStatus.NOT_FOUND);
         }
         categoryRepository.deleteById(categoryId);
-        return true;
     }
 }

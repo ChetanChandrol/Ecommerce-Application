@@ -11,6 +11,6 @@ public interface CategoryService {
     public List<CategoryResponseDTO> getAllCategory();
     public CategoryResponseDTO getCategoryById(UUID categoryId);
     public CategoryResponseDTO updateCategory(UUID categoryId, CategoryRequestDTO categoryRequestDTO);
-    public boolean deleteCategory(UUID categoryId);
+    public void deleteCategory(UUID categoryId);
 
 }

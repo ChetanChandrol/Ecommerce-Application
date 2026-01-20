@@ -6,9 +6,11 @@ import com.dev.ECommerceProductService.dto.FakeStoreProductRequestDTO;
 import com.dev.ECommerceProductService.dto.FakeStoreProductResponseDTO;
 import com.dev.ECommerceProductService.dto.ProductRequestDTO;
 import com.dev.ECommerceProductService.dto.ProductResponseDTO;
+import com.dev.ECommerceProductService.exception.ProductServiceException;
 import com.dev.ECommerceProductService.mapper.ProductMapper;
 import com.dev.ECommerceProductService.service.ProductService;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -51,10 +53,10 @@ public class FakeStoreProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductResponseDTO getProductsById(String productId) throws ProductNotFoundException {
+    public ProductResponseDTO getProductsById(String productId) {
         FakeStoreProductResponseDTO fakeStoreProductResponseDTO = fakeStoreApiClient.getProductById(productId);
         if (isNull(fakeStoreProductResponseDTO)) {
-            throw new ProductNotFoundException("Product Not Found By Id " + productId);
+            throw new ProductServiceException("Product Not Found By Id " + productId, HttpStatus.NOT_FOUND);
         }
         return toProductResponseDTO(fakeStoreProductResponseDTO);
     }
@@ -67,15 +69,14 @@ public class FakeStoreProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Boolean deleteProduct(String productId) {
+    public void deleteProduct(String productId) {
         fakeStoreApiClient.deleteProduct(productId);
-        return true;
     }
 
     @Override
     public ProductResponseDTO updateProduct(String productId, ProductRequestDTO productRequestDTO) {
         FakeStoreProductRequestDTO fakeStoreProductRequestDTO = toFakeStoreProductRequestDTO(productRequestDTO);
-        return toProductResponseDTO(fakeStoreApiClient.updateProduct(productId,fakeStoreProductRequestDTO));
+        return toProductResponseDTO(fakeStoreApiClient.updateProduct(productId, fakeStoreProductRequestDTO));
     }
 }
 

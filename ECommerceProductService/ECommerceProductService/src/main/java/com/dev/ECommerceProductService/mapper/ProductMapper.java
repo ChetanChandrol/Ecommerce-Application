@@ -1,13 +1,15 @@
 package com.dev.ECommerceProductService.mapper;
 
 
-import com.dev.ECommerceProductService.dto.*;
+import com.dev.ECommerceProductService.dto.FakeStoreProductRequestDTO;
+import com.dev.ECommerceProductService.dto.FakeStoreProductResponseDTO;
+import com.dev.ECommerceProductService.dto.ProductRequestDTO;
+import com.dev.ECommerceProductService.dto.ProductResponseDTO;
 import com.dev.ECommerceProductService.model.Category;
 import com.dev.ECommerceProductService.model.Product;
 
 import static com.dev.ECommerceProductService.mapper.CategoryMapper.toCategoryResponseDTO;
 import static com.dev.ECommerceProductService.util.ProductUtil.convertToString;
-import static com.dev.ECommerceProductService.util.ProductUtil.isNull;
 import static java.util.UUID.fromString;
 
 public class ProductMapper {
@@ -23,7 +25,7 @@ public class ProductMapper {
 
     public static ProductResponseDTO toProductResponseDTO(FakeStoreProductResponseDTO fakeStoreProductResponseDTO) {
         ProductResponseDTO productResponseDTO = new ProductResponseDTO();
-        productResponseDTO.setCategory( toCategoryResponseDTO(fakeStoreProductResponseDTO.getCategory()));
+        productResponseDTO.setCategory(toCategoryResponseDTO(fakeStoreProductResponseDTO.getCategory()));
         productResponseDTO.setDescription(fakeStoreProductResponseDTO.getDescription());
         productResponseDTO.setPrice(fakeStoreProductResponseDTO.getPrice());
         productResponseDTO.setTitle(fakeStoreProductResponseDTO.getTitle());
@@ -34,10 +36,7 @@ public class ProductMapper {
 
 
     public static Product toProduct(ProductRequestDTO productRequestDTO) {
-        if(isNull(productRequestDTO))
-        {
-         throw new InvalidProductRequest("Invalid Product Request");
-        }
+
         Product product = new Product();
         Category category = new Category();
         category.setId(fromString(productRequestDTO.getCategory()));
@@ -50,10 +49,6 @@ public class ProductMapper {
     }
 
     public static ProductResponseDTO toProductResponseDTO(Product product) {
-        if(isNull(product))
-        {
-            throw new InvalidProductRequest("Invalid Product Request");
-        }
         ProductResponseDTO productResponseDTO = new ProductResponseDTO();
         productResponseDTO.setCategory(toCategoryResponseDTO(product.getCategory()));
         productResponseDTO.setDescription(product.getDescription());

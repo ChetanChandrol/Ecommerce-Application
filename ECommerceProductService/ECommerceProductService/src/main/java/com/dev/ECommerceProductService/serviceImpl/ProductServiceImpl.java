@@ -62,13 +62,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Boolean deleteProduct(String productId) {
+    public void deleteProduct(String productId) {
         UUID id = toUUID(productId);
         if (!productRepository.existsById(id)) {
             throw new ProductServiceException("Product Not Found with the desired Id" + id, HttpStatus.NOT_FOUND);
         }
         productRepository.deleteById(id);
-        return true;
     }
 
     @Override

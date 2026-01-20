@@ -10,11 +10,11 @@ import java.util.List;
 public interface ProductService {
     List<ProductResponseDTO> getAllProducts();
 
-    ProductResponseDTO getProductsById(String productId) throws ProductNotFoundException;
+    ProductResponseDTO getProductsById(String productId) ;
 
     ProductResponseDTO createProduct(ProductRequestDTO productRequestDTO);
 
-    Boolean deleteProduct(String productId);
+    void deleteProduct(String productId);
 
     ProductResponseDTO updateProduct(String productId, ProductRequestDTO productRequestDTO) throws ProductServiceException;
 }

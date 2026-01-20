@@ -5,7 +5,7 @@ import com.dev.ECommerceProductService.dto.CategoryResponseDTO;
 import com.dev.ECommerceProductService.model.Category;
 
 public class CategoryMapper {
-    public static Category toCategory(CategoryRequestDTO categoryRequestDTO) throws InvalidCategoryRequest {
+    public static Category toCategory(CategoryRequestDTO categoryRequestDTO) {
         Category category = new Category();
         category.setCategoryName(categoryRequestDTO.getCategoryName());
         return category;
