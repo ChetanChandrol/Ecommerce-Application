@@ -8,6 +8,7 @@ import com.dev.ECommerceProductService.dto.ProductRequestDTO;
 import com.dev.ECommerceProductService.dto.ProductResponseDTO;
 import com.dev.ECommerceProductService.exception.ProductServiceException;
 import com.dev.ECommerceProductService.mapper.ProductMapper;
+import com.dev.ECommerceProductService.model.Product;
 import com.dev.ECommerceProductService.service.ProductService;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpStatus;
@@ -77,6 +78,11 @@ public class FakeStoreProductServiceImpl implements ProductService {
     public ProductResponseDTO updateProduct(String productId, ProductRequestDTO productRequestDTO) {
         FakeStoreProductRequestDTO fakeStoreProductRequestDTO = toFakeStoreProductRequestDTO(productRequestDTO);
         return toProductResponseDTO(fakeStoreApiClient.updateProduct(productId, fakeStoreProductRequestDTO));
+    }
+
+    @Override
+    public ProductResponseDTO findProductByTitle(String title) {
+        return null;
     }
 }
 

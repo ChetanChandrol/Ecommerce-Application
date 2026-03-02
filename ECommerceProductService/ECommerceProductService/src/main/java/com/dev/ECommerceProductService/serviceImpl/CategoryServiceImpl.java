@@ -18,7 +18,7 @@ import static com.dev.ECommerceProductService.mapper.CategoryMapper.toCategoryRe
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
-    private CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
 
     public CategoryServiceImpl(CategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
@@ -26,6 +26,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryResponseDTO createCategory(CategoryRequestDTO categoryRequestDTO) {
+
         Category category = toCategory(categoryRequestDTO);
         category = categoryRepository.save(category);
         return toCategoryResponseDTO(category);
@@ -66,5 +67,6 @@ public class CategoryServiceImpl implements CategoryService {
             throw new ProductServiceException("Category Not Found With the desired ID" + categoryId, HttpStatus.NOT_FOUND);
         }
         categoryRepository.deleteById(categoryId);
+
     }
 }

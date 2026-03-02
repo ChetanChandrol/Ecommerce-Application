@@ -22,8 +22,8 @@ import static com.dev.ECommerceProductService.util.ProductUtil.toUUID;
 
 @Service("productServiceImpl")
 public class ProductServiceImpl implements ProductService {
-    private ProductRepository productRepository;
-    private CategoryRepository categoryRepository;
+    private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
 
     public ProductServiceImpl(ProductRepository productRepository, CategoryRepository categoryRepository) {
         this.productRepository = productRepository;
@@ -41,19 +41,18 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponseDTO getProductsById(String productId) {
+        if (productId == null || productId.isEmpty()) {
+            throw new ProductServiceException("Invalid ProductId", HttpStatus.BAD_REQUEST);
+        }
         UUID id = toUUID(productId);
-        Product product = productRepository.findById(id).orElseThrow(
-                () -> new ProductServiceException("Product ID not found " + id, HttpStatus.NOT_FOUND)
-        );
+        Product product = productRepository.findById(id).orElseThrow(() -> new ProductServiceException("Product ID not found " + id, HttpStatus.NOT_FOUND));
         return toProductResponseDTO(product);
     }
 
     @Override
     public ProductResponseDTO createProduct(ProductRequestDTO productRequestDTO) {
         UUID categoryId = toUUID(productRequestDTO.getCategory());
-        Category category = categoryRepository.findById(categoryId).orElseThrow(
-                () -> new ProductServiceException("Category ID not found " + categoryId, HttpStatus.NOT_FOUND)
-        );
+        Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new ProductServiceException("Category ID not found " + categoryId, HttpStatus.NOT_FOUND));
         Product product = toProduct(productRequestDTO);
         product.setCategory(category);
         product = productRepository.save(product);
@@ -86,6 +85,15 @@ public class ProductServiceImpl implements ProductService {
         product.setId(productID);
         product = productRepository.save(product);
         return toProductResponseDTO(product);
+    }
 
+    @Override
+    public ProductResponseDTO findProductByTitle(String title) {
+        if (title == null || title.isEmpty()) {
+            throw new ProductServiceException("Invalid Title", HttpStatus.BAD_REQUEST);
+        }
+        Product product = productRepository.findByTitle(title).orElseThrow(() -> new ProductServiceException("Product with title is not available", HttpStatus.BAD_REQUEST));
+
+        return toProductResponseDTO(product);
     }
 }

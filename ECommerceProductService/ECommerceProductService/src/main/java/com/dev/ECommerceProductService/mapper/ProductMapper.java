@@ -14,6 +14,7 @@ import static java.util.UUID.fromString;
 
 public class ProductMapper {
 
+
     public static FakeStoreProductRequestDTO toFakeStoreProductRequestDTO(ProductRequestDTO productRequestDTO) {
         FakeStoreProductRequestDTO fakeStoreProductRequestDTO = new FakeStoreProductRequestDTO();
         fakeStoreProductRequestDTO.setCategory(productRequestDTO.getCategory());

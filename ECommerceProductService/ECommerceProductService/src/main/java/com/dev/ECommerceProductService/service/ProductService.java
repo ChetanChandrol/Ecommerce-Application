@@ -4,6 +4,7 @@ package com.dev.ECommerceProductService.service;
 import com.dev.ECommerceProductService.dto.ProductRequestDTO;
 import com.dev.ECommerceProductService.dto.ProductResponseDTO;
 import com.dev.ECommerceProductService.exception.ProductServiceException;
+import com.dev.ECommerceProductService.model.Product;
 
 import java.util.List;
 
@@ -17,4 +18,6 @@ public interface ProductService {
     void deleteProduct(String productId);
 
     ProductResponseDTO updateProduct(String productId, ProductRequestDTO productRequestDTO) throws ProductServiceException;
+
+    public ProductResponseDTO findProductByTitle(String title);
 }

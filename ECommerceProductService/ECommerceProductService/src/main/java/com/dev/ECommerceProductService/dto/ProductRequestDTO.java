@@ -13,7 +13,7 @@ public class ProductRequestDTO {
     @NotBlank(message = "Title Cannot Be Blank")
     private String title;
     @Min(1)
-    private double price;
+    private Double price;
     @NotNull(message = "CategoryID Cannot Be Null")
     @NotBlank(message = "CategoryID Cannot Be Blank")
     private String category;
