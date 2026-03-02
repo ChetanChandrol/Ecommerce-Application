@@ -52,7 +52,6 @@ public class JksConfig {
     @Bean
     AuthorizationServerSettings authorizationServerSettings(){
         return AuthorizationServerSettings.builder().issuer(providerUrl).build();
-
     }
 
 }
