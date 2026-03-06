@@ -4,7 +4,7 @@ package com.dev.ECommerceProductService.service;
 import com.dev.ECommerceProductService.dto.ProductRequestDTO;
 import com.dev.ECommerceProductService.dto.ProductResponseDTO;
 import com.dev.ECommerceProductService.exception.ProductServiceException;
-import com.dev.ECommerceProductService.model.Product;
+import com.dev.ECommerceProductService.specification.SearchCriteria;
 
 import java.util.List;
 

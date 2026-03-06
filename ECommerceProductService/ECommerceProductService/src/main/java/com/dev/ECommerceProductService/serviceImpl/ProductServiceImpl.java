@@ -10,6 +10,9 @@ import com.dev.ECommerceProductService.model.Product;
 import com.dev.ECommerceProductService.repository.CategoryRepository;
 import com.dev.ECommerceProductService.repository.ProductRepository;
 import com.dev.ECommerceProductService.service.ProductService;
+import com.dev.ECommerceProductService.specification.SearchCriteria;
+import com.dev.ECommerceProductService.specification.SpecificationBuilder;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -96,4 +99,6 @@ public class ProductServiceImpl implements ProductService {
 
         return toProductResponseDTO(product);
     }
+
+
 }

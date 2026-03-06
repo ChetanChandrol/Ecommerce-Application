@@ -46,6 +46,7 @@ public class ProductMapper {
         product.setTitle(productRequestDTO.getTitle());
         product.setImage(productRequestDTO.getImage());
         product.setPrice(productRequestDTO.getPrice());
+        product.setBrand(productRequestDTO.getBrand());
         return product;
     }
 
@@ -57,6 +58,7 @@ public class ProductMapper {
         productResponseDTO.setId(convertToString(product.getId()));
         productResponseDTO.setTitle(product.getTitle());
         productResponseDTO.setPrice(product.getPrice());
+        productResponseDTO.setBrand(product.getBrand());
         return productResponseDTO;
     }
 
