@@ -14,16 +14,5 @@ public class SearchCriteria {
 
     public SearchCriteria() {}
 
-    public SearchCriteria(String key, List<Object> value, SearchOperation searchOperation) {
-        this.key = key;
-        this.value = value;
-        this.operation = searchOperation;
-    }
 
-    public SearchCriteria(String key, List<Object> value,Object valueTo, SearchOperation searchOperation) {
-        this.key = key;
-        this.value = value;
-        this.operation = searchOperation;
-        this.valueTo = valueTo;
-    }
 }

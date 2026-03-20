@@ -62,9 +62,12 @@ public class SearchService {
 
     public Page<ProductResponseDTO> searchSpecification(List<SearchCriteria> searchCriteria, int pageNumber, int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
+
         SpecificationBuilder<Product> specificationBuilder = new SpecificationBuilder<>();
         specificationBuilder.setSearchCriteriaList(searchCriteria);
+
         Specification<Product> productSpecification = specificationBuilder.build();
+
         Page<ProductResponseDTO> productResponseDTOS = productRepository.findAll(productSpecification,pageable)
                 .map(ProductMapper::toProductResponseDTO);
         return productResponseDTOS;

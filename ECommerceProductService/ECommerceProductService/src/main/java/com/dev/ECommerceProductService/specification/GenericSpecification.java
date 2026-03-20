@@ -11,9 +11,7 @@ public class GenericSpecification<T> implements Specification<T> {
     private SearchCriteria criteria;
 
     public GenericSpecification(SearchCriteria criteria) {
-
         this.criteria = criteria;
-
     }
 
     @Override
@@ -89,7 +87,6 @@ public class GenericSpecification<T> implements Specification<T> {
                 return root.get(criteria.getKey()).in(criteria.getValue());
 
             case BETWEEN:
-                System.out.println(criteria.getValueTo()+"BETWEEEENNNN"+criteria.getValue().get(0));
                 return cb.between(
 
                         root.get(criteria.getKey()),

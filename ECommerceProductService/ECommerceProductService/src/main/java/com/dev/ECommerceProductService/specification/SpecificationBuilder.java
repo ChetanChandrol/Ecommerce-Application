@@ -8,23 +8,7 @@ public class SpecificationBuilder<T> {
  
     private List<SearchCriteria> searchCriteriaList= new ArrayList<>();
  
-//    public SpecificationBuilder<T> with(
-//            String key,
-//            List<Object> value,
-//            SearchOperation operation) {
-//
-//        searchCriteriaList.add(new SearchCriteria(key, value, operation));
-//        return this;
-//    }
-//
-//    public SpecificationBuilder<T> withBetween(
-//            String key,
-//            List<Object> value,
-//            Object valueTo) {
-//
-//        searchCriteriaList.add(new SearchCriteria(key, value , valueTo, SearchOperation.BETWEEN));
-//        return this;
-//    }
+
  
     public Specification<T> build() {
  

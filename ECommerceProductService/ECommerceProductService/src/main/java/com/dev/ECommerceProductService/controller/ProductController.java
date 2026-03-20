@@ -1,9 +1,12 @@
 package com.dev.ECommerceProductService.controller;
 
 
+import com.dev.ECommerceProductService.client.UserServiceClient;
 import com.dev.ECommerceProductService.dto.ProductRequestDTO;
 import com.dev.ECommerceProductService.dto.ProductResponseDTO;
+import com.dev.ECommerceProductService.exception.ProductServiceException;
 import com.dev.ECommerceProductService.service.ProductService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -23,36 +26,37 @@ public class ProductController {
     @Autowired
     @Qualifier("productServiceImpl")
     private ProductService productService;
+    @Autowired
+    private UserServiceClient userServiceClient;
 
     @GetMapping
-    public ResponseEntity<HashMap<String, Object>> getAllProducts() {
+    public ResponseEntity<HashMap<String, Object>> getAllProducts(){
         List<ProductResponseDTO> response = productService.getAllProducts();
         return new ResponseEntity<>(buildResponse(response), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<HashMap<String, Object>> getProductById(@PathVariable("id") String productId) {
+    public ResponseEntity<HashMap<String, Object>> getProductById(@PathVariable("id") String productId)  {
         ProductResponseDTO productResponseDTO = productService.getProductsById(productId);
         return new ResponseEntity<>(buildResponse(productResponseDTO), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProductById(@PathVariable("id") String productId) {
+    public ResponseEntity<Void> deleteProductById(@PathVariable("id") String productId)  {
         productService.deleteProduct(productId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping
-    public ResponseEntity<HashMap<String, Object>> createProduct(@Valid @RequestBody ProductRequestDTO productRequestDTO) {
+    public ResponseEntity<HashMap<String, Object>> createProduct(@Valid @RequestBody ProductRequestDTO productRequestDTO)  {
         ProductResponseDTO responseDTO = productService.createProduct(productRequestDTO);
         return new ResponseEntity<>(buildResponse(responseDTO), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<HashMap<String, Object>> updateProduct(@Valid @RequestBody ProductRequestDTO productRequestDTO, @PathVariable("id") String productId) {
+    public ResponseEntity<HashMap<String, Object>> updateProduct(@Valid @RequestBody ProductRequestDTO productRequestDTO, @PathVariable("id") String productId, @RequestHeader("token") String token) {
         ProductResponseDTO responseDTO = productService.updateProduct(productId, productRequestDTO);
         return new ResponseEntity<>(buildResponse(responseDTO), HttpStatus.OK);
     }
-
 
 }
