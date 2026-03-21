@@ -32,8 +32,7 @@ public class UserServiceUtil {
         HttpHeaders headers = new HttpHeaders();
         headers.set(HttpHeaders.SET_COOKIE, responseMap.get("header").toString());
 
-        HttpEntity<Headers> httpEntity = new HttpEntity<>(headers);
-        return new ResponseEntity<>(response, httpEntity.getHeaders(),httpStatus);
+        return new ResponseEntity<>(response, headers,httpStatus);
     }
 
 

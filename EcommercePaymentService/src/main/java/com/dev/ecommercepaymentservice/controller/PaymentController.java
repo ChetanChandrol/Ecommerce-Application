@@ -1,6 +1,6 @@
 package com.dev.ecommercepaymentservice.controller;
 
-import com.dev.ecommercepaymentservice.dto.CreatePaymentLinkRequestDto;
+import com.dev.ecommercepaymentservice.dto.User;
 import com.dev.ecommercepaymentservice.service.PaymentService;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,24 +13,20 @@ public class PaymentController {
         this.paymentService = paymentService;
     }
 
-    @PostMapping
-    public String createPaymentLink(@RequestBody CreatePaymentLinkRequestDto createPaymentLinkRequestDto) throws Exception {
-        return paymentService.createLink(createPaymentLinkRequestDto.getOrderId());
+    @PostMapping("/{orderId}")
+    public String createPaymentLink(@PathVariable String orderId, @RequestBody User user) throws Exception {
+        return paymentService.createLink(orderId, user);
     }
 
     @GetMapping
-    public String getStatus(@PathVariable("orderId") String orderId)
-    {
+    public String getStatus(@PathVariable("orderId") String orderId) {
         return null;
     }
 
     @PostMapping("/webhook")
-    public void handleWebhookEvent(@RequestBody Object webHookEvent)
-    {
+    public void handleWebhookEvent(@RequestBody Object webHookEvent) {
         System.out.println("Handle web hook");
     }
-
-
 
 
 }

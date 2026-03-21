@@ -1,10 +1,12 @@
 package com.dev.orderservice.service.implementation;
 
 import com.dev.orderservice.dto.AddToCartRequestDTO;
+import com.dev.orderservice.exception.OrderServiceException;
 import com.dev.orderservice.models.Cart;
 import com.dev.orderservice.models.CartItem;
 import com.dev.orderservice.repository.CartRepository;
 import com.dev.orderservice.service.CartService;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -13,10 +15,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class CartServiceImplementation implements CartService {
+public class CartServiceImpl implements CartService {
     private CartRepository cartRepository;
 
-    public CartServiceImplementation(CartRepository cartRepository) {
+    public CartServiceImpl(CartRepository cartRepository) {
         this.cartRepository = cartRepository;
     }
 
@@ -59,12 +61,12 @@ public class CartServiceImplementation implements CartService {
     public Cart getCart(UUID userId) {
 
         return cartRepository.findByUserId(userId).orElseThrow(
-                () -> new RuntimeException("Cart Not Found"));
+                () -> new OrderServiceException("Cart Not Found", HttpStatus.BAD_REQUEST));
     }
 
     public void updateQuantity(UUID userId, Long productId, Integer quantity) {
         Cart cart = cartRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Cart not found"));
+                .orElseThrow(() -> new OrderServiceException("Cart not found",HttpStatus.BAD_REQUEST));
 
         cart.getCartItems().removeIf(item -> {
             if (item.getProductId().equals(productId)) {
@@ -78,7 +80,7 @@ public class CartServiceImplementation implements CartService {
     }
     public void deleteItem(UUID userId, Long productId) {
         Cart cart = cartRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Cart not found"));
+                .orElseThrow(() -> new OrderServiceException("Cart not found",HttpStatus.BAD_REQUEST));
         cart.getCartItems().removeIf(cartItem -> cartItem.getProductId().equals(productId));
         cartRepository.save(cart);
     }

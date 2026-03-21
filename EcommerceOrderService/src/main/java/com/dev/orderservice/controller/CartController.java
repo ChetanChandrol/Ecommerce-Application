@@ -4,8 +4,13 @@ import com.dev.orderservice.dto.AddToCartRequestDTO;
 import com.dev.orderservice.models.Cart;
 import com.dev.orderservice.security.LoggedUser;
 import com.dev.orderservice.service.CartService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+
+import static com.dev.orderservice.utils.OrderServiceUtil.buildResponse;
 import static com.dev.orderservice.utils.SecurityUtils.getUser;
 
 @RestController
@@ -18,17 +23,17 @@ public class CartController {
     }
 
     @PostMapping("/add")
-    public Cart addToCart(@RequestBody AddToCartRequestDTO request) {
+    public ResponseEntity<HashMap<String, Object>> addToCart(@RequestBody AddToCartRequestDTO request) {
         LoggedUser loggedUser= getUser();
         assert loggedUser != null;
-        return cartService.addToCart(loggedUser.getId(),request);
+        return buildResponse(cartService.addToCart(loggedUser.getId(),request), HttpStatus.OK);
     }
 
     @GetMapping
-    public Cart getCart() {
+    public ResponseEntity<HashMap<String, Object>> getCart() {
         LoggedUser loggedUser= getUser();
         assert loggedUser != null;
-        return cartService.getCart(loggedUser.getId());
+        return buildResponse(cartService.getCart(loggedUser.getId()), HttpStatus.OK);
     }
 
     @PutMapping("/update/{productId}/{quantity}")
@@ -36,7 +41,6 @@ public class CartController {
     {   LoggedUser loggedUser= getUser();
         assert loggedUser != null;
         cartService.updateQuantity(loggedUser.getId(),productId,quantity);
-
     }
     @DeleteMapping("/delete/{userID}/{productId}")
     public void deleteItem(@PathVariable Long productId)

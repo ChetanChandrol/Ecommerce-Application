@@ -1,5 +1,7 @@
 package com.dev.ecommercepaymentservice.service;
 
+
+import com.dev.ecommercepaymentservice.dto.User;
 import com.razorpay.PaymentLink;
 import com.razorpay.RazorpayClient;
 import org.json.JSONObject;
@@ -10,7 +12,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Primary
 public class RazorPayPaymentService implements PaymentService {
-    private RazorpayClient razorpayClient;
+    private RazorpayClient  razorpayClient;
 
     @Autowired
     public RazorPayPaymentService(RazorpayClient razorpayClient) {
@@ -18,16 +20,10 @@ public class RazorPayPaymentService implements PaymentService {
     }
 
     @Override
-    public String createLink(String orderId) throws Exception {
+    public String createLink(String orderId, User user) throws Exception {
         JSONObject paymentLinkRequest = new JSONObject();
-        // Computers are not good with decimals
-        // computers dont store the exact value of a decimal.
-        // computers stores approximations for decimals.
-        // Real amount = 10.01
-        // Real amount = 99.99
-        // Real amount = 150.33
-        // give the value as RealAmount * 100.
-        paymentLinkRequest.put("amount", 1001);
+        System.out.println("AMOUNTTT"+user.getAmount());
+        paymentLinkRequest.put("amount",user.getAmount()*100 );
         paymentLinkRequest.put("currency","INR");
         paymentLinkRequest.put("accept_partial",false);
 //        paymentLinkRequest.put("first_min_partial_amount",500);
@@ -36,9 +32,9 @@ public class RazorPayPaymentService implements PaymentService {
         paymentLinkRequest.put("description","Payment for Order Id " + orderId);
 
         JSONObject customer = new JSONObject();
-        customer.put("name","Chetan Chandrol");
-        customer.put("contact","+917869027703");
-        customer.put("email","chandrolchetan@gmail.com");
+        customer.put("name", user.getUserName());
+        customer.put("contact",user.getMobileNumber());
+        customer.put("email","chetan@gmail.com");
         paymentLinkRequest.put("customer",customer);
         JSONObject notify = new JSONObject();
         notify.put("sms",true);

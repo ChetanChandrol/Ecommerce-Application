@@ -55,7 +55,6 @@ public class UserServiceClient {
         JsonNode jsonNode = objectMapper.readTree(response);
         ValidateTokenResponseDto validateTokenResponseDto =
                 objectMapper.readValue(jsonNode.get("response").toString(), ValidateTokenResponseDto.class);
-        System.out.println("EMAIL--------" + validateTokenResponseDto.getEmail());
 
         return validateTokenResponseDto;
     }
