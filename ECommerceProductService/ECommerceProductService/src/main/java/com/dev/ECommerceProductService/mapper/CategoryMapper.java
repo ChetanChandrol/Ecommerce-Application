@@ -13,7 +13,7 @@ public class CategoryMapper {
 
     public static CategoryResponseDTO toCategoryResponseDTO(Category category) {
         CategoryResponseDTO categoryResponseDTO = new CategoryResponseDTO();
-        categoryResponseDTO.setId(category.getId());
+        categoryResponseDTO.setId(category.getId().toString());
         categoryResponseDTO.setCategoryName(category.getCategoryName());
         return categoryResponseDTO;
     }

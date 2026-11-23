@@ -6,6 +6,7 @@ import com.dev.ecommerceuserservice.dto.UserResponseDto;
 import com.dev.ecommerceuserservice.dto.ValidateTokenResponseDto;
 import com.dev.ecommerceuserservice.enums.TokenStatus;
 import com.dev.ecommerceuserservice.service.AuthService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +32,7 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<HashMap<String, Object>> Signup(@RequestBody SignupRequestDto signupRequestDto) {
+    public ResponseEntity<HashMap<String, Object>> Signup(@RequestBody SignupRequestDto signupRequestDto) throws JsonProcessingException {
         UserResponseDto userResponseDto = authService.signUp(signupRequestDto);
         return buildResponse(userResponseDto, HttpStatus.OK);
     }

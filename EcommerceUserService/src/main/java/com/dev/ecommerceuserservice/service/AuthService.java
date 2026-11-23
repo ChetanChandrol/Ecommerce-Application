@@ -5,12 +5,13 @@ import com.dev.ecommerceuserservice.dto.SignupRequestDto;
 import com.dev.ecommerceuserservice.dto.UserResponseDto;
 import com.dev.ecommerceuserservice.dto.ValidateTokenResponseDto;
 import com.dev.ecommerceuserservice.enums.TokenStatus;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.util.HashMap;
 
 public interface AuthService {
     HashMap<String, Object> login(LoginRequestDTO loginRequestDTO);
    void logout(String Token);
-    UserResponseDto signUp(SignupRequestDto signupRequestDto);
+    UserResponseDto signUp(SignupRequestDto signupRequestDto) throws JsonProcessingException;
     ValidateTokenResponseDto validate(String token);
 }

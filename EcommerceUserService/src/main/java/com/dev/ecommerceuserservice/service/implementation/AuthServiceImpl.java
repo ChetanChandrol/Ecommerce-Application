@@ -1,9 +1,6 @@
 package com.dev.ecommerceuserservice.service.implementation;
 
-import com.dev.ecommerceuserservice.dto.LoginRequestDTO;
-import com.dev.ecommerceuserservice.dto.SignupRequestDto;
-import com.dev.ecommerceuserservice.dto.UserResponseDto;
-import com.dev.ecommerceuserservice.dto.ValidateTokenResponseDto;
+import com.dev.ecommerceuserservice.dto.*;
 import com.dev.ecommerceuserservice.enums.TokenStatus;
 import com.dev.ecommerceuserservice.exception.UserServiceException;
 import com.dev.ecommerceuserservice.models.Role;
@@ -14,8 +11,11 @@ import com.dev.ecommerceuserservice.repository.TokenRepository;
 import com.dev.ecommerceuserservice.repository.UserRepository;
 import com.dev.ecommerceuserservice.service.AuthService;
 import com.dev.ecommerceuserservice.utils.JwtUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import org.springframework.http.HttpStatus;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -30,13 +30,17 @@ public class AuthServiceImpl implements AuthService {
     private TokenRepository tokenRepository;
     private JwtUtil jwtUtil;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+    private KafkaTemplate<String, String> kafkaTemplate;
+    private ObjectMapper objectMapper;
 
-    public AuthServiceImpl(UserRepository userRepository, RoleRepository roleRepository, TokenRepository tokenRepository, JwtUtil jwtUtil, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public AuthServiceImpl(UserRepository userRepository, RoleRepository roleRepository, TokenRepository tokenRepository, JwtUtil jwtUtil, BCryptPasswordEncoder bCryptPasswordEncoder, KafkaTemplate<String, String> kafkaTemplate, ObjectMapper objectMapper) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.tokenRepository = tokenRepository;
         this.jwtUtil = jwtUtil;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.kafkaTemplate = kafkaTemplate;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -81,7 +85,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public UserResponseDto signUp(SignupRequestDto signupRequestDto) {
+    public UserResponseDto signUp(SignupRequestDto signupRequestDto) throws JsonProcessingException {
         Optional<User> signUpUser = userRepository.findByEmail(signupRequestDto.getEmail());
         if (signUpUser.isPresent()) {
             throw new UserServiceException("Email Already Exist", HttpStatus.BAD_REQUEST);
@@ -97,6 +101,16 @@ public class AuthServiceImpl implements AuthService {
         );
         roles.add(role);
         user.setRoles(roles);
+
+        SignupEventDto signupEventDto = new SignupEventDto();
+        signupEventDto.setBody("Welcome To The KingDom ");
+        signupEventDto.setTo(signupRequestDto.getEmail());
+        signupEventDto.setFrom("chandrolchetan@gmail.com");
+        signupEventDto.setSubject("Welcome to Scaler");
+
+        kafkaTemplate.send("signupEventTopic",
+                objectMapper.writeValueAsString(signupEventDto));
+
         return toUserResponseDto(userRepository.save(user));
     }
 

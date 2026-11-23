@@ -6,7 +6,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -17,22 +16,21 @@ import org.springframework.web.client.RestTemplate;
 
 @Component
 public class UserServiceClient {
-    private RestTemplateBuilder restTemplateBuilder;
+    private RestTemplate restTemplate;
     @Value("${userservice.api.url}")
     private String userServiceUrl;
     @Value("${userservice.api.path.validate}")
     private String userServiceValidatePath;
 
 
-    public UserServiceClient(RestTemplateBuilder restTemplateBuilder) {
-        this.restTemplateBuilder = restTemplateBuilder;
+    public UserServiceClient(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
     }
 
     public ValidateTokenResponseDto validateToken(String token) throws JsonProcessingException {
         String response = null;
         try {
             String validateTokenUrl = userServiceUrl + userServiceValidatePath;
-            RestTemplate restTemplate = restTemplateBuilder.build();
 
             System.out.println(token);
             HttpHeaders headers = new HttpHeaders();
@@ -54,7 +52,7 @@ public class UserServiceClient {
         JsonNode jsonNode = objectMapper.readTree(response);
         ValidateTokenResponseDto validateTokenResponseDto =
                 objectMapper.readValue(jsonNode.get("response").toString(), ValidateTokenResponseDto.class);
-        System.out.println("EMAIL--------"+validateTokenResponseDto.getEmail());
+        System.out.println("EMAIL--------" + validateTokenResponseDto.getEmail());
 
         return validateTokenResponseDto;
     }

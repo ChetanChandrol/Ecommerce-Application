@@ -49,7 +49,7 @@ public class  JwtUtil {
             );
 
             return Jwts.builder()
-                    .issuer("https://localhost:8081")
+                    .issuer("http://localhost:8081")
                     .setIssuedAt(Date.from(createdAt))
                     .setExpiration(Date.from(expiryAt))
                     .signWith(privateKey, signatureAlgorithm)

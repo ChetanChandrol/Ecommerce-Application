@@ -12,6 +12,9 @@ import com.dev.ECommerceProductService.repository.ProductRepository;
 import com.dev.ECommerceProductService.service.ProductService;
 import com.dev.ECommerceProductService.specification.SearchCriteria;
 import com.dev.ECommerceProductService.specification.SpecificationBuilder;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -34,6 +37,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Cacheable(value = "products", key = "'allProducts'")
     public List<ProductResponseDTO> getAllProducts() {
         List<Product> productList = productRepository.findAll();
         if (productList.isEmpty()) {
@@ -43,6 +47,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Cacheable(value = "product-single", key = "#productId")
     public ProductResponseDTO getProductsById(String productId) {
         if (productId == null || productId.isEmpty()) {
             throw new ProductServiceException("Invalid ProductId", HttpStatus.BAD_REQUEST);
@@ -53,6 +58,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @CacheEvict(value = "products", key = "'allProducts'")
     public ProductResponseDTO createProduct(ProductRequestDTO productRequestDTO) {
         UUID categoryId = toUUID(productRequestDTO.getCategory());
         Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new ProductServiceException("Category ID not found " + categoryId, HttpStatus.NOT_FOUND));
@@ -64,6 +70,10 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = "products", key = "'allProducts'"),
+            @CacheEvict(value = "product-single", key = "#productId")
+    })
     public void deleteProduct(String productId) {
         UUID id = toUUID(productId);
         if (!productRepository.existsById(id)) {
@@ -73,6 +83,10 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = "products", key = "'allProducts'"),
+            @CacheEvict(value = "product-single", key = "#productId")
+    })
     public ProductResponseDTO updateProduct(String productId, ProductRequestDTO productRequestDTO) throws ProductServiceException {
         UUID productID = toUUID(productId);
 
