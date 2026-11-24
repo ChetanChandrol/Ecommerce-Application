@@ -1,206 +1,106 @@
 # 🛒 E-Commerce Application
 
-A **Microservices-Based E-Commerce Backend Application** built using Java, Spring Boot, Spring Security, Hibernate, and MySQL. The application follows a distributed microservices architecture, where different services handle user management, product management, order processing, and payment operations independently.
+A Spring Boot microservices backend for managing users, product catalogs, carts, orders, payments, and signup emails.
 
-The project focuses on building scalable REST APIs, implementing secure authentication and authorization, and managing communication between independent services.
+**Stack:** Java 17/21 · Spring Boot · Spring Cloud · MySQL · Redis · Apache Kafka · Razorpay
 
-## 🚀 Features
+## ✨ What the project does
 
-### 1. User Service
-- User registration and login.
-- JWT-based authentication.
-- User logout and token validation.
-- Role-based authorization.
-- OAuth 2.0 Authorization Server integration.
-- Secure user management.
+- 🔐 **User accounts:** Signup, login, JWT validation, and role management.
+- 📦 **Product catalog:** Product and category management, filtering, and paginated search.
+- 🛍️ **Cart and orders:** Add items to a cart, update quantities, and place orders.
+- 💳 **Payments:** Create Razorpay payment links through the Payment Service.
+- 📧 **Signup emails:** Publish signup events to Kafka and send welcome emails through an independent Email Service.
 
-### 2. Product Service
-- Create, retrieve, update, and delete products.
-- Product category management.
-- Product search functionality.
-- Category-based product filtering.
-- Sorting and pagination.
-- Specification-based search.
+## 🏗️ Services
 
-### 3. Order Service
-- Add products to cart.
-- Retrieve cart details.
-- Update product quantities.
-- Remove products from cart.
-- Place orders.
-- Retrieve user order history.
+| Module | Responsibility | Local port |
+| --- | --- | --- |
+| `ApiGateway` | Routes user and catalog requests to services discovered through Eureka | `8080` by default |
+| `ServiceDiscovery` | Eureka service registry | `8761` |
+| `ConfigurationServer` | Centralized configuration backed by Git, with a Flyway migration for its MySQL schema | `8085` |
+| `EcommerceUserService` | Authentication, roles, and signup event publishing | `8081` in the configured JWT issuer |
+| `ECommerceProductService/ECommerceProductService` | Product and category APIs, search, and Redis integration | `8082` |
+| `EcommerceOrderService` | Cart management and order placement | `8083` |
+| `EcommercePaymentService` | Razorpay payment link creation | `8084` |
+| `EmailService` | Consumes signup events and sends emails over SMTP | `9000` |
 
-### 4. Payment Service
-- Razorpay payment integration.
-- Payment link generation.
-- Payment webhook endpoint.
+### 📧 Signup email flow
 
-### 5. Configuration Server
-- Centralized application configuration.
-- Spring Cloud Config Server.
-- Database-backed configuration management.
+```mermaid
+sequenceDiagram
+    actor Client
+    participant User as User Service
+    participant Kafka
+    participant Email as Email Service
+    participant SMTP
 
-## 🛠️ Tech Stack
-
-| Technology | Purpose |
-|---|---|
-| Java 21 | Programming Language |
-| Spring Boot | Backend Framework |
-| Spring MVC | REST API Development |
-| Spring Security | Authentication & Authorization |
-| Spring Data JPA | Database Operations |
-| Hibernate | ORM |
-| MySQL | Relational Database |
-| JWT | Token-Based Authentication |
-| OAuth 2.0 | Authorization |
-| Spring Cloud Config | Centralized Configuration |
-| Maven | Dependency Management |
-| Razorpay | Payment Integration |
-| Lombok | Boilerplate Code Reduction |
-
-## 🏗️ Microservices Architecture
-
-The application is divided into five independent services:
-
-```text
-                 E-Commerce Application
-                          |
-          +---------------+---------------+
-          |               |               |
-      User Service   Product Service   Order Service
-          |               |               |
-       MySQL            MySQL            MySQL
-          |
-          +-------------------------------+
-                          |
-                   Payment Service
-                          |
-                       Razorpay
-
-              Configuration Server
-             (Centralized Configuration)
+    Client->>User: POST /auth/signup
+    User->>Kafka: Publish signupEventTopic
+    Kafka->>Email: Deliver signup event
+    Email->>SMTP: Send welcome email
 ```
 
-### Project Structure
+The Product Service also includes a **Fake Store API client**. The main product controller uses the local product service.
 
-```text
-Ecommerce-Application/
-│
-├── ConfigurationServer/
-│
-├── EcommerceUserService/
-│
-├── ECommerceProductService/
-│   └── ECommerceProductService/
-│
-├── EcommerceOrderService/
-│
-└── EcommercePaymentService/
+## 🚀 Run locally
+
+1. Install **JDK 21**, Git, MySQL, Kafka, and Redis. The Order and Payment modules target Java 17. Each module includes a Maven Wrapper.
+
+2. Clone the repository.
+
+   ```bash
+   git clone https://github.com/ChetanChandrol/Ecommerce-Application.git
+   cd Ecommerce-Application
+   ```
+
+3. Create the MySQL schemas for the modules you plan to run. Configure each module's datasource URL, username, and password.
+
+4. Configure the Config Server's Git repository and credentials. Supply the User Service's signing keystore and configure its path, password, and alias. Make sure the User Service port and the JWT issuer URL used by the other services agree.
+
+5. Start Kafka and Redis. Configure the Kafka broker and SMTP credentials for signup emails. Use Razorpay test credentials for local payment testing. Keep credentials and private keystores in local configuration.
+
+6. Start Eureka and the Config Server first. Then start the User, Product, Payment, Order, and Email services you need. Start the API Gateway once its target services have registered. Run each module in a separate terminal from the folder containing its `pom.xml`.
+
+   **Windows PowerShell**
+
+   ```powershell
+   .\mvnw.cmd spring-boot:run
+   ```
+
+   **macOS / Linux**
+
+   ```bash
+   ./mvnw spring-boot:run
+   ```
+
+The Eureka dashboard is available at `http://localhost:8761`.
+
+## 🔗 API quick reference
+
+| Service | Method and path | Purpose |
+| --- | --- | --- |
+| User | `POST /auth/signup`, `POST /auth/login` | Register or sign in |
+| User | `GET /auth/validate`, `PUT /auth/logout` | Validate or invalidate a token |
+| Product | `GET /product`, `GET /product/{id}` | Browse or retrieve products |
+| Product | `GET /category`, `GET /category/{id}` | Browse or retrieve categories |
+| Product | `GET /search`, `GET /search/specification` | Search products with pagination |
+| Order | `POST /cart/add`, `GET /cart` | Add an item or view the cart |
+| Order | `POST /order/place`, `GET /order` | Place an order or list orders |
+| Payment | `POST /payment/{orderId}` | Create a Razorpay payment link |
+
+The gateway configuration covers User and Product routes. Call the Order and Payment services on their own ports. Supply the credentials required by each protected endpoint.
+
+## 🧪 Tests
+
+Run the tests from the module you want to check. Configure any external services required by that module's tests.
+
+```powershell
+.\mvnw.cmd test
 ```
 
-## ⚙️ Getting Started
-
-### Prerequisites
-
-Make sure you have installed:
-
-- Java Development Kit (JDK) 21
-- Maven
-- MySQL Server
-- IntelliJ IDEA or another Java IDE
-- Git
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/ChetanChandrol/Ecommerce-Application.git
-```
-
-### 2. Navigate to the Project
-
-```bash
-cd Ecommerce-Application
-```
-
-### 3. Configure MySQL
-
-- Create the required MySQL databases.
-- Configure database URLs, usernames, and passwords in the respective `application.properties` files.
-- Configure the required Razorpay credentials for payment integration.
-- Configure the Configuration Server and its database settings.
-
-Do not commit database passwords, JWT secrets, or payment credentials to GitHub.
-
-### 4. Build the Services
-
-Navigate to each service directory and execute:
-
-```bash
-mvn clean install
-```
-
-### 5. Run the Application
-
-Start the services individually using:
-
-```bash
-mvn spring-boot:run
-```
-
-Start the Configuration Server first, followed by the other services after configuring their required dependencies and database connections.
-
-## 🔗 API Overview
-
-| Service | Endpoint | Method | Description |
-|---|---|---|---|
-| User | `/auth/signup` | POST | Register user |
-| User | `/auth/login` | POST | User login |
-| User | `/auth/logout` | PUT | User logout |
-| User | `/auth/validate` | GET | Validate token |
-| Product | `/product` | GET | Get all products |
-| Product | `/product/{id}` | GET | Get product by ID |
-| Product | `/product` | POST | Create product |
-| Product | `/category` | GET | Get all categories |
-| Product | `/search` | GET | Search products |
-| Order | `/cart/add` | POST | Add product to cart |
-| Order | `/cart` | GET | Get cart |
-| Order | `/order/place` | POST | Place order |
-| Payment | `/payment/{orderId}` | POST | Generate payment link |
-
-*Note: Configure the appropriate service base URLs and authentication headers when making API requests.*
-
-## 🔐 Security
-
-The application implements security mechanisms including:
-
-- Spring Security.
-- JWT-based authentication.
-- Role-based access control.
-- OAuth 2.0 Authorization Server.
-- OAuth 2.0 Resource Server support.
-
-## 🎯 Learning Outcomes
-
-Through this project, I explored and implemented:
-
-- Microservices architecture using Spring Boot.
-- RESTful API development.
-- Authentication and authorization using Spring Security.
-- JWT and OAuth 2.0 integration.
-- Database integration using Spring Data JPA and Hibernate.
-- Product searching, filtering, sorting, and pagination.
-- Inter-service communication.
-- Payment gateway integration.
-- Centralized configuration using Spring Cloud Config.
+On macOS or Linux, use `./mvnw test`.
 
 ## 👨‍💻 Author
 
-**Chetan Chandrol**
-
-- GitHub: [@ChetanChandrol](https://github.com/ChetanChandrol)
-- Project: [E-Commerce Application](https://github.com/ChetanChandrol/Ecommerce-Application)
-
----
-
-⭐ If you find this project interesting, consider giving it a star!
-
+[Chetan Chandrol](https://github.com/ChetanChandrol)
